@@ -2,7 +2,7 @@ import { API_URL} from "./utils"
 
 export const CreateTask = async(taskObj) => {
     const url = `${API_URL}/tasks`;
-    console.log('url', url)
+    // console.log('url', url)
     const options = {
         method: 'POST',
         headers: {
@@ -13,7 +13,7 @@ export const CreateTask = async(taskObj) => {
     try{
         const result = await fetch(url, options);
         const data = await result.json()
-        console.log(data)
+        // console.log(data)
         return data
     }catch(err){
         return err;
@@ -22,9 +22,9 @@ export const CreateTask = async(taskObj) => {
 
 export const GetAllTask = async(taskObj) => {
     const url = `${API_URL}/tasks`;
-    console.log('url', url)
+    // console.log('url', url)
     const options = {
-        method: 'POST',
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         }
@@ -32,16 +32,15 @@ export const GetAllTask = async(taskObj) => {
     try{
         const result = await fetch(url, options);
         const data = await result.json()
-        console.log(data)
+        // console.log(data)
         return data
     }catch(err){
         return err;
     }
 }
 
-
 export const DeleteTaskById = async(id) => {
-    const url = `${API_URL}/tasks`;
+    const url = `${API_URL}/tasks/${id}`;
     console.log('url', url)
     const options = {
         method: 'DELETE',
@@ -55,12 +54,13 @@ export const DeleteTaskById = async(id) => {
         console.log(data)
         return data
     }catch(err){
-        return err;
+        console.error('Error deleting task:', err);
+        return { success: false, message: 'Failed to delete task' }; // Handle error
     }
 }
 
 export const UpdateTaskById = async(id, reqBody) => {
-    const url = `${API_URL}/tasks`;
+    const url = `${API_URL}/tasks/${id}`;
     console.log('url', url)
     const options = {
         method: 'PUT',
@@ -72,9 +72,10 @@ export const UpdateTaskById = async(id, reqBody) => {
     try{
         const result = await fetch(url, options);
         const data = await result.json()
-        console.log(data)
+        console.log('Update response:', data); // Log the response
         return data
     }catch(err){
-        return err;
+        console.error('Error updating task:', err);
+        return { success: false, message: 'Failed to update task' }; // Handle error
     }
 }

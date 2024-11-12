@@ -3,7 +3,7 @@ import {FaCheck, FaPencilAlt, FaPlus, FaSearch, FaTrash} from 'react-icons/fa'
 import { ToastContainer} from 'react-toastify'
 import { CreateTask, DeleteTaskById, GetAllTask, UpdateTaskById } from './api'
 import { notify } from './utils'
-import { API_URL } from './utils'
+// import { API_URL } from './utils'
 
 function TaskManager() {
   const [input, setInput] = useState('')
@@ -35,7 +35,6 @@ function TaskManager() {
   }, [updateTask])
 
   const handleAddTask = async() => {
-
     const obj = {
         taskName: input,
         isDone: false
@@ -49,16 +48,12 @@ function TaskManager() {
         }else{
             //show error toast
             notify(message, 'error')
-            console.log('API_URL:', API_URL); // Make sure this is the expected URL
         }
-        
         fetchAllTasks()
     }catch(err){
         console.error(err)
         notify('Failed to create task', 'error')
-        console.log('API_URL:', API_URL); // Make sure this is the expected URL
     }
-    // console.log(obj)
   }
 
   const fetchAllTasks = async() => {
@@ -69,18 +64,17 @@ function TaskManager() {
         setCopyTasks(data);
     }catch(err){
         console.error(err)
-        notify('Failed to create task', 'error')
-        
+        notify('Failed to Fetch task', 'error')
     }
   }
   useEffect(() => {
     fetchAllTasks()
   }, [])
 
-  const handleDeleteTask = async() => {
+  const handleDeleteTask = async(id) => {
     try{
         const { success, message } = 
-            await DeleteTaskById();
+            await DeleteTaskById(id);
         if(success){
             //show success toast
             notify(message, 'success')
@@ -91,7 +85,7 @@ function TaskManager() {
         fetchAllTasks()
     }catch(err){
         console.error(err)
-        notify('Failed to create task', 'error')
+        notify('Failed to delete task', 'error')
     }
   }
 
@@ -114,7 +108,7 @@ function TaskManager() {
         fetchAllTasks()
     }catch(err){
         console.error(err)
-        notify('Failed to update task', 'error')
+        notify('Failed to check and uncheck task', 'error')
     }
   }
 
@@ -154,7 +148,7 @@ function TaskManager() {
         {/* Input and search box */}
         <div className='d-flex justify-content-between align-tems-center mb-4 w-100'>
             <div className='input-group flex-grow-1 me-2'>
-                <input type='text' onChange={(e)=> setInput(e.target.value)} className='form-control me-1' placeholder='Add a new Task'/>
+                <input type='text' value={input} onChange={(e)=> setInput(e.target.value)} className='form-control me-1' placeholder='Add a new Task'/>
                 <button 
                 className='btn btn-success btn-sm me-2'
                 onClick={handleTask}>
@@ -174,31 +168,28 @@ function TaskManager() {
 
         {/* list of items */}
         <div className='d-flex flex-column w-100'>
-            {
-                tasks.map((item) => (
-                    <div key={item._id} className='m-2 p-2 border bg-light w-100 rounded-2 d-flex justify-content-between align-items-center'>
+            {tasks?.map((item) => (
+                <div key={item._id} className='m-2 p-2 border bg-light w-100 rounded-2 d-flex justify-content-between align-items-center'>
                     <span className={item.isDone ? 'text-decoration-line-through': ''}>{item.taskName}</span>
-
-                        <div className=''>
-                            <button 
-                            onClick={()=> handleCheckAndUncheck(item)}
+                    <div className=''>
+                        <button 
+                            onClick={() => handleCheckAndUncheck(item)}
                             className='btn btn-success btn-sm me-2' type='button'>
-                                <FaCheck />
-                            </button>
-                            <button 
-                            onClick={()=> setUpdateTask(item)}
+                            <FaCheck />
+                        </button>
+                        <button 
+                            onClick={() => setUpdateTask(item)}
                             className='btn btn-primary btn-sm me-2' type='button'>
-                                <FaPencilAlt />
-                            </button>
-                            <button
-                            onClick={()=> handleDeleteTask(item._id)} 
+                            <FaPencilAlt />
+                        </button>
+                        <button
+                            onClick={() => handleDeleteTask(item._id)} 
                             className='btn btn-danger btn-sm me-2' type='button'>
-                                <FaTrash />
-                            </button>
-                        </div>
+                            <FaTrash />
+                        </button>
                     </div>
-                ))
-            }
+                </div>
+            ))}
         </div>
 
         {/* Toastify */}
